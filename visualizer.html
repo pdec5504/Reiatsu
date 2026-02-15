@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reiatsu audio visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-neutral-900 text-white min-h-screen flex flex-col items-center justify-center font-sans antialiased selection:bg-green-500 selection:text-black"
+  >
+    <main class="flex flex-col items-center gap-6">
+      <h1
+        class="text-3xl font-bold text-green-500 tracking-wider drop-shadow-lg animate-pulse"
+      >
+        REIATSU VISUALIZER
+      </h1>
+
+      <div class="relative group">
+        <div
+          class="absolute -inset-1 bg-gradient-to-r from-green-600 to-lime-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"
+        ></div>
+
+        <canvas
+          id="myCanvas"
+          width="600"
+          height="300"
+          class="relative block bg-black border-2 border-green-500 rounded-lg shadow-[0_0_20px_rgba(34,197,94,0.5)]"
+        >
+        </canvas>
+      </div>
+
+      <div
+        class="bg-neutral-800 border border-neutral-700 p-6 rounded-xl w-full max-w-xl shadow-xl"
+      >
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >1. Choose your song (MP3)</label
+          >
+          <input
+            type="file"
+            id="audioFile"
+            accept="audio/*"
+            class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700 cursor-pointer transition-colors"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-2"
+            >2. Player</label
+          >
+          <audio
+            id="player"
+            controls
+            class="w-full accent-green-500 rounded-lg"
+          ></audio>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const fileInput = document.getElementById("audioFile");
+      const player = document.getElementById("player");
+      const canvas = document.getElementById("myCanvas");
+      const ctx = canvas.getContext("2d");
+
+      let audioContext;
+      let analyser;
+      let source;
+
+      fileInput.onchange = function () {
+        const files = this.files;
+        if (files.length === 0) return;
+
+        player.src = URL.createObjectURL(files[0]);
+        player.load();
+        player.play();
+
+        if (!audioContext) {
+          setupAudio();
+        }
+      };
+
+      function setupAudio() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        source = audioContext.createMediaElementSource(player);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+        draw();
+      }
+
+      function draw() {
+        requestAnimationFrame(draw);
+
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        analyser.getByteFrequencyData(dataArray);
+
+        ctx.fillStyle = "rgb(0, 0, 0)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = dataArray[i];
+
+          ctx.fillStyle = "hsl(" + (i * 5 + 100) + ", 100%, 50%)";
+
+          ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+          x += barWidth + 1;
+        }
+      }
+    </script>
+  </body>
+</html>
