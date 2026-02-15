@@ -11,7 +11,6 @@ export class VisualizerEngine {
   }
 
   init(audioContext, source) {
-    // Create the Visualizer instance
     this.visualizer = butterchurn.createVisualizer(audioContext, this.canvas, {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -19,10 +18,8 @@ export class VisualizerEngine {
       textureRatio: 1,
     });
 
-    // Connect audio
     this.visualizer.connectAudio(source);
 
-    // Load initial random preset
     this.loadRandomPreset();
   }
 
@@ -38,18 +35,15 @@ export class VisualizerEngine {
     }
   }
 
-  // --- Preset Management ---
-
   loadPresetByIndex(index) {
     if (!this.visualizer) return;
 
     const presetKey = this.presetKeys[index];
     const preset = this.presets[presetKey];
 
-    // Load preset with a 2.7 second transition (blend)
     this.visualizer.loadPreset(preset, 2.7);
 
-    return presetKey; // Return the name to update UI
+    return presetKey;
   }
 
   loadRandomPreset() {
