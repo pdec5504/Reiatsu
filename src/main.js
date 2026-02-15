@@ -1,71 +1,41 @@
 import { AudioController } from "./audio.js";
-import { VisualizerEngine } from "./visualizer.js";
+import { MilkdropLayer } from "./milkdropLayer.js";
 
 const fileInput = document.getElementById("audio-file");
 const audioPlayer = document.getElementById("audio-player");
+const btnChange = document.getElementById("btn-change-preset");
 const canvas = document.getElementById("visualizer-canvas");
-const btnNext = document.getElementById("btn-next-preset");
-const btnPrev = document.getElementById("btn-prev-preset");
-const presetNameLabel = document.getElementById("current-preset-name");
-const statusText = document.getElementById("status-text");
 
 const audioCtrl = new AudioController();
-const vizEngine = new VisualizerEngine(canvas);
+const milkdrop = new MilkdropLayer(canvas);
 
-let isPlaying = false;
+let isAnimating = false;
 
 fileInput.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  try {
-    statusText.innerText = "Loading Audio...";
+  const { context, source } = await audioCtrl.setupAudio(file, audioPlayer);
 
-    const { context, source } = await audioCtrl.setupAudio(file, audioPlayer);
+  milkdrop.init(context, source);
 
-    vizEngine.init(context, source);
+  audioPlayer.play();
 
-    const initialPreset = vizEngine.loadRandomPreset();
-    updatePresetName(initialPreset);
-
-    audioPlayer.play();
-    statusText.innerText = "Playing";
-
-    if (!isPlaying) {
-      isPlaying = true;
-      animationLoop();
-    }
-  } catch (error) {
-    console.error("Error initializing:", error);
-    statusText.innerText = "Error";
+  if (!isAnimating) {
+    isAnimating = true;
+    loop();
   }
 });
 
-btnNext.addEventListener("click", () => {
-  if (isPlaying) {
-    const name = vizEngine.nextPreset();
-    updatePresetName(name);
-  }
-});
-
-btnPrev.addEventListener("click", () => {
-  if (isPlaying) {
-    const name = vizEngine.prevPreset();
-    updatePresetName(name);
-  }
+btnChange.addEventListener("click", () => {
+  milkdrop.loadRandomPreset();
 });
 
 window.addEventListener("resize", () => {
-  vizEngine.resize();
+  milkdrop.resize();
 });
 
-function animationLoop() {
-  requestAnimationFrame(animationLoop);
-  vizEngine.render();
-}
-
-function updatePresetName(name) {
-  if (name) {
-    presetNameLabel.innerText = name;
-  }
+function loop() {
+  requestAnimationFrame(loop);
+  milkdrop.render();
 }

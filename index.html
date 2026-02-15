@@ -3,106 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Milkdrop Web Visualizer</title>
-
+    <title>Reiatsu audio visualizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
     <style>
-      /* Custom scrollbar to look nicer */
+      body {
+        scrollbar-width: none;
+        background: black;
+      }
       ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #1a1a1a;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #4b5563;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #6b7280;
+        display: none;
       }
     </style>
   </head>
   <body
-    class="bg-black text-white h-screen w-screen overflow-hidden font-sans antialiased selection:bg-purple-500 selection:text-white"
+    class="h-screen w-screen overflow-hidden text-white font-mono selection:bg-purple-500 selection:text-white"
   >
     <canvas
       id="visualizer-canvas"
-      class="absolute top-0 left-0 w-full h-full z-0 block"
+      class="absolute top-0 left-0 w-full h-full z-0"
     ></canvas>
 
     <div
-      class="absolute bottom-0 left-0 w-full z-10 p-6 bg-gradient-to-t from-black via-black/80 to-transparent"
+      class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-full max-w-md px-4"
     >
       <div
-        class="max-w-4xl mx-auto flex flex-col gap-4 bg-neutral-900/40 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-2xl"
+        class="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl hover:bg-black/60 transition-all group"
       >
-        <div
-          class="flex justify-between items-center border-b border-white/10 pb-4"
+        <h2
+          class="text-center text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 mb-4 tracking-widest"
         >
-          <h1
-            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 tracking-widest"
-          >
-            REIATSU
-            <span class="text-white/50 text-xs font-normal align-middle ml-2"
-              >AUDIO VISUALIZER</span
-            >
-          </h1>
-          <div class="text-xs text-gray-400">
-            Status: <span id="status-text" class="text-green-400">Ready</span>
-          </div>
-        </div>
+          REIATSU
+        </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <div class="space-y-2">
-            <label
-              class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
-              >Audio Source</label
-            >
+        <div class="space-y-4">
+          <div class="relative">
             <input
               type="file"
               id="audio-file"
               accept="audio/*"
-              class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-purple-600 file:text-white file:cursor-pointer hover:file:bg-purple-500 cursor-pointer bg-neutral-800/50 rounded-lg transition-colors"
+              class="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-600 file:text-white file:cursor-pointer hover:file:bg-cyan-500 cursor-pointer border border-white/5 rounded-full bg-black/20 transition-colors"
             />
           </div>
 
-          <div class="space-y-2">
-            <label
-              class="text-xs font-semibold text-gray-400 uppercase tracking-wider"
-              >Visual Effects</label
-            >
-            <div class="flex gap-2">
-              <button
-                id="btn-prev-preset"
-                class="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors border border-white/5"
-              >
-                ◀
-              </button>
-              <button
-                id="btn-next-preset"
-                class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)]"
-              >
-                Randomize Preset
-              </button>
-            </div>
-            <p
-              id="current-preset-name"
-              class="text-xs text-center text-gray-500 truncate mt-1"
-            >
-              None selected
-            </p>
-          </div>
-        </div>
-
-        <div class="mt-2">
           <audio
             id="audio-player"
             controls
-            class="w-full h-8 opacity-60 hover:opacity-100 transition-opacity invert hue-rotate-180"
+            class="w-full h-10 opacity-80 invert hue-rotate-180 rounded-lg"
           ></audio>
         </div>
+
+        <button
+          id="btn-change-preset"
+          class="mt-4 w-full py-2 bg-white/10 hover:bg-white/20 rounded text-xs uppercase tracking-wider transition-colors border border-white/5 shadow-lg"
+        >
+          Change Background Effect
+        </button>
       </div>
     </div>
 
