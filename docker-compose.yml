@@ -1,0 +1,7 @@
+services:
+  app-visualizer:
+    container_name: milkdrop-visualizer
+    build: .
+    ports:
+      - "8080:80"
+    restart: unless-stopped
