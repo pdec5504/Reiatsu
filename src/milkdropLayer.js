@@ -10,23 +10,31 @@ export class MilkdropLayer {
   }
 
   init(audioContext, source) {
+    this.canvas.width = 1920;
+    this.canvas.height = 1080;
+
     this.visualizer = butterchurn.createVisualizer(audioContext, this.canvas, {
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: 1920,
+      height: 1080,
       pixelRatio: window.devicePixelRatio || 1,
       textureRatio: 1,
     });
+
     this.visualizer.connectAudio(source);
     this.loadRandomPreset();
+
+    // Força o ajuste inicial
+    this.resize();
   }
 
   render() {
-    if (this.visualizer) this.visualizer.render();
+    if (this.visualizer) {
+      this.visualizer.render();
+    }
   }
 
   resize() {
-    if (this.visualizer)
-      this.visualizer.setRendererSize(window.innerWidth, window.innerHeight);
+    this.visualizer.setRendererSize(1920, 1080);
   }
 
   loadRandomPreset() {
