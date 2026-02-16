@@ -2,6 +2,7 @@
 
 Audio visualizer
 
+```
 reiatsu/
 ├── index.html
 ├── src/
