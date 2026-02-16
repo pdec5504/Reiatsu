@@ -1,15 +1,24 @@
 {
   "name": "reiatsu",
   "private": true,
-  "version": "0.0.0",
+  "productName": "Reiatsu Visualizer",
+  "version": "1.0.0",
+  "description": "Audio vizualizer",
+  "author": "pdec5504",
   "type": "module",
+  "main": "electron-main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:start": "npm run build && electron .",
+    "electron:pack": "npm run build && electron-builder --dir",
+    "electron:make": "npm run build && electron-builder"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.24",
+    "electron": "^40.4.1",
+    "electron-builder": "^26.7.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "vite": "^7.3.1"
@@ -17,5 +26,30 @@
   "dependencies": {
     "butterchurn": "^2.6.7",
     "butterchurn-presets": "^2.4.7"
+  },
+  "build": {
+    "appId": "com.pdec5504.reiatsu",
+    "productName": "Reiatsu Visualizer",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.js",
+      "package.json",
+      "!Dockerfile",
+      "!docker-compose.yml",
+      "!.dockerignore"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "mac": {
+      "target": "dmg"
+    }
   }
 }
