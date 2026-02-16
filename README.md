@@ -8,6 +8,6 @@ reiatsu/
 │ ├── main.js (centralized architecture)
 │ ├── audio.js (process audio)
 │ ├── visualizer.js (Butterchurn)
-│ └── ui.js (menu)
-├── package.json
-└── vite.config.js
+│ ├── milkdropLayer.js (main effect generator)
+│ └── recorder.js (record the audio + video replay)
+└── package.json

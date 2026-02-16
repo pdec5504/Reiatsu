@@ -9,13 +9,12 @@ export class Recorder {
   start(canvas, audioContext, audioSource) {
     if (this.isRecording) return;
 
-    console.log("Recorder: Iniciando captura...");
+    console.log("Recorder: Iniciando captura em Alta Qualidade...");
     this.recordedChunks = [];
 
     const videoStream = canvas.captureStream(60);
 
     this.streamDestination = audioContext.createMediaStreamDestination();
-
     audioSource.connect(this.streamDestination);
 
     const combinedStream = new MediaStream([
@@ -23,11 +22,17 @@ export class Recorder {
       ...this.streamDestination.stream.getAudioTracks(),
     ]);
 
-    const options = { mimeType: "video/webm;codecs=vp9,opus" };
+    const options = {
+      mimeType: "video/webm;codecs=vp9,opus",
+      videoBitsPerSecond: 12000000, // 12 Mbps
+    };
 
     if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-      console.warn("VP9 não suportado, tentando padrão...");
-      delete options.mimeType;
+      console.warn("VP9 não suportado, tentando H.264 ou padrão...");
+      options.mimeType = "video/webm;codecs=h264,opus";
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        delete options.mimeType;
+      }
     }
 
     try {
@@ -58,7 +63,6 @@ export class Recorder {
       }
 
       this.mediaRecorder.onstop = () => {
-        console.log("Recorder: Gravação finalizada.");
         this.isRecording = false;
         this.cleanup();
         resolve();
@@ -72,10 +76,7 @@ export class Recorder {
   }
 
   save() {
-    if (this.recordedChunks.length === 0) {
-      console.warn("Nada gravado para salvar.");
-      return;
-    }
+    if (this.recordedChunks.length === 0) return;
 
     const blob = new Blob(this.recordedChunks, { type: "video/webm" });
     const url = URL.createObjectURL(blob);
@@ -85,7 +86,7 @@ export class Recorder {
     a.href = url;
 
     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
-    a.download = `milkdrop-replay-${timestamp}.webm`;
+    a.download = `milkdrop-hq-${timestamp}.webm`;
 
     a.click();
     window.URL.revokeObjectURL(url);
@@ -93,7 +94,6 @@ export class Recorder {
 
   discard() {
     this.recordedChunks = [];
-    console.log("Recorder: Gravação descartada.");
   }
 
   cleanup() {
